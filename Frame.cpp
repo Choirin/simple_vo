@@ -1,7 +1,6 @@
 #include "Frame.h"
 
 
-
 Frame::Frame(cv::Mat mGray)
 {
 	mGray.copyTo(this->mGray);
