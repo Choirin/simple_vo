@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
         }
 
         imshow("Trajectory", traj);
-        cvWaitKey(1);
+        cv::waitKey(1);
     }
 #else
     for (size_t i = start; i < stop; i+=step) {
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
         }
 
         imshow("Trajectory", traj);
-        cvWaitKey(1);
+        cv::waitKey(1);
     }
 #endif
 #else
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
         imshow("keyframe", keyframe);
         imshow("undistorted", undistorted);
 
-        cvWaitKey(1);
+        cv::waitKey(1);
     }
 #endif
 

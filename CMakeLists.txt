@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
+set(CMAKE_CXX_FLAGS "-O2 -std=c++11")
+
 project(simple_vo)
 find_package(OpenCV REQUIRED)
 add_executable(simple_vo
