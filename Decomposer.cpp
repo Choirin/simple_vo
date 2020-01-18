@@ -1,21 +1,12 @@
-//
-// Created by kohei on 2016/03/02.
-//
-
 #include "Decomposer.h"
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#ifdef ANDROID_NDK
-#include <android/log.h>
-#else
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <windows.h>
-#endif
 
 //#define UNDISTORTION
 
@@ -32,20 +23,6 @@ Decomposer::Decomposer() {
 	framesAfterKeyframe = 0;
 
 #define KITTI
-#ifdef IPHONE
-    K = (cv::Mat_<double>(3,3) << 691.0, 0.0, 360.0, 0.0, 691.0, 270.0, 0.0, 0.0, 1.0);
-	K = K * imageWidth / 720;
-	distCoeffs = (cv::Mat_<double>(4, 1) << 0.006637, -0.052151, 0.002196, -0.000496);
-#endif
-#ifdef XPERIAZ3
-	K = (cv::Mat_<double>(3, 3) << 988.833, 0.0, 633.399, 0.0, 990.107, 346.812, 0.0, 0.0, 1.0);
-	K = K * imageWidth / 1280;
-	distCoeffs = (cv::Mat_<double>(1, 4) << 0.006637, -0.052151, 0.002196, -0.000496);
-#endif
-#ifdef ACTIONCAM
-	K = (cv::Mat_<double>(3, 3) << 21.8 * 1920 / 36, 0.0, 960.0, 0.0, 21.8 * 1920 / 36, 540.0, 0.0, 0.0, 1.0);
-	K = K * imageWidth / 1920;
-#endif
 #ifdef KITTI
 	imageWidth = 1242;
 	K = (cv::Mat_<double>(3, 3) << 721.5377, 0.0, 609.5593, 0.0, 721.5377, 172.854, 0.0, 0.0, 1.0);
@@ -237,9 +214,6 @@ int Decomposer::track(cv::Mat mScene) {
 	//cvWaitKey(0);
 	if (match.size() > MATCHEDTHRESHOLD) {
 		cv::Mat E, R, t, inliers;
-#ifndef ANDROID_NDK
-		long int start = GetTickCount();
-#endif
 		cv::Mat rvec;
 #ifdef UNDISTORTION
 		cv::Mat K = cv::Mat::eye(3, 3, this->K.type());
@@ -294,7 +268,6 @@ int Decomposer::track(cv::Mat mScene) {
 		std::cout << "PnPR=" << R << std::endl;
 		std::cout << "PnPt=" << t << std::endl;
 		std::cout << "inlier_points1.size=" << inlier_points1.size() << std::endl;
-		std::cout << "time:" << GetTickCount() - start << std::endl;
 #endif
 #endif
 
@@ -375,24 +348,18 @@ int Decomposer::insertKeyframe(void) {
 	// 十分な対応点がある
 	if (match.size() > MATCHEDTHRESHOLD) {
 		cv::Mat E, R, t, mask;
-#ifndef ANDROID_NDK
-		long int start = GetTickCount();
-#endif
 #if 0
 #ifdef UNDISTORTION
 		double focal = 1.0;
 		cv::Point2d pp(0, 0);
 		E = cv::findEssentialMat(match_point_undistort1, match_point_undistort2, focal, pp, cv::RANSAC, 0.999, 1.0, mask);
-		std::cout << "time:" << GetTickCount() - start << std::endl;
 		recoverPose(E, match_point_undistort1, match_point_undistort2, R, t, focal, pp, mask);
 #else
 		E = cv::findEssentialMat(match_point_undistort1, match_point_undistort2, K, cv::RANSAC, 0.999, 1.0, mask);
-		std::cout << "time:" << GetTickCount() - start << std::endl;
 		recoverPose(E, match_point_undistort1, match_point_undistort2, K, R, t, mask);
 #endif
 #else
 		E = cv::findEssentialMat(match_point_undistort1, match_point_undistort2, K, cv::RANSAC, 0.999, 1.0, mask);
-		std::cout << "time:" << GetTickCount() - start << std::endl;
 		// recoverPoseから姿勢を出すのではなく、前回のKeyframeとのマッチが取れた特徴点からsolvePnP
 		// 以下の逆算をしたい(R, tを求める)
 #if 1
@@ -478,11 +445,6 @@ int Decomposer::insertKeyframe(void) {
 		pnts3D.row(2) /= pnts3D.row(3);
 		pnts3D.row(3) /= pnts3D.row(3);
 
-#if 1
-#ifndef ANDROID_NDK
-		std::cout << "time:" << GetTickCount() - start << std::endl;
-#endif
-#endif
 		std::vector<cv::Point2f> point_debug;
 		std::vector<cv::Point3f> keypointPos_debug;
 		std::vector<cv::Mat> keypointPos(mCandidateKeypoint.size());
@@ -667,18 +629,13 @@ int Decomposer::matchFeatures(cv::Mat mScene) {
     // 十分な対応点がある
 	if (match.size() > MATCHEDTHRESHOLD) {
 		cv::Mat E, R, t, mask;
-#ifndef ANDROID_NDK
-		long int start = GetTickCount();
-#endif
 #ifdef UNDISTORTION
 		double focal = 1.0;
 		cv::Point2d pp(0, 0);
 		E = cv::findEssentialMat(match_point_undistort1, match_point_undistort2, focal, pp, cv::RANSAC, 0.999, 1.0, mask);
-		std::cout << "time:" << GetTickCount() - start << std::endl;
 		recoverPose(E, match_point_undistort1, match_point_undistort2, R, t, focal, pp, mask);
 #else
 		E = cv::findEssentialMat(match_point_undistort1, match_point_undistort2, K, cv::RANSAC, 0.999, 1.0, mask);
-		std::cout << "time:" << GetTickCount() - start << std::endl;
 		recoverPose(E, match_point_undistort1, match_point_undistort2, K, R, t, mask);
 #endif
 //#define SHOWMATCH
@@ -735,7 +692,6 @@ int Decomposer::matchFeatures(cv::Mat mScene) {
 #ifndef ANDROID_NDK
 		std::cout << "R=" << R << std::endl;
 		std::cout << "t=" << t << std::endl;
-		std::cout << "time:" << GetTickCount() - start << std::endl;
 #endif
 #endif
 		std::vector<cv::Point2f> point_debug;

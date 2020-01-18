@@ -1,7 +1,3 @@
-//
-// Created by kohei on 2016/03/02.
-//
-
 #ifndef FEATUREDETECT_DECOMPOSER_H
 #define FEATUREDETECT_DECOMPOSER_H
 
@@ -11,11 +7,7 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <vector>
-#ifdef ANDROID_NDK
-#include <android/log.h>
-#else
 #include <opencv2/highgui/highgui.hpp>
-#endif
 
 //#define DEBUG
 
@@ -51,7 +43,6 @@ private:
     std::vector<cv::KeyPoint> mKeyframeKeypoint;
 
 	// Candidate Keyframe
-	// TODO previous frameÇ∆Ç©Ç™Ç†ÇÍÇŒéñë´ÇËÇÈÇÃÇ≈å„ÅXè¡Ç∑
 	cv::Mat mCandidateFrame;
 	cv::Mat mCandidateDescriptor;
 	std::vector<cv::KeyPoint> mCandidateKeypoint;
