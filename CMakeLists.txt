@@ -5,7 +5,7 @@ set(CMAKE_CXX_FLAGS "-O2 -std=c++11")
 project(simple_vo)
 find_package(OpenCV REQUIRED)
 add_executable(simple_vo
-    Decomposer.cpp
-    Frame.cpp
+    decomposer.cpp
+    frame.cpp
     simple_vo.cpp)
 target_link_libraries(simple_vo ${OpenCV_LIBS})

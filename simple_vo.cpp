@@ -1,15 +1,14 @@
 #include <iostream>
 #include <iomanip>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/imgcodecs.hpp>
+#include <opencv2/opencv.hpp>
 
-#include "Decomposer.h"
+#include "decomposer.h"
 
-
-int main(int argc, char* argv[]) {
-    const char sTemplate[] = "/path/to/kitti/dataset/sequences/08/image_0/%06d.png"; const size_t start = 0; const size_t stop = 4980;
+int main(int argc, char *argv[])
+{
+    const char sTemplate[] = "/Users/kohei/data/dataset/sequences/00/image_0/%06d.png";
+    const size_t start = 0;
+    const size_t stop = 4980;
     Decomposer decomposer;
     size_t step = 1;
 
@@ -65,7 +64,8 @@ int main(int argc, char* argv[]) {
         cv::waitKey(1);
     }
 #else
-    for (size_t i = start; i < stop; i+=step) {
+    for (size_t i = start; i < stop; i += step)
+    {
         char sKeyframe[256], sFrame[256];
         sprintf(sKeyframe, sTemplate, (int)i);
         sprintf(sFrame, sTemplate, (int)(i + step));
@@ -80,11 +80,13 @@ int main(int argc, char* argv[]) {
         cv::Point2f position = decomposer.getPosition2() * scale;
         position.y = -position.y;
         position += offset;
-        cv::circle(traj, position, 1, CV_RGB(255,0,0), 2);
+        cv::circle(traj, position, 1, CV_RGB(255, 0, 0), 2);
 
         std::vector<cv::Mat> keypointPos = decomposer.getPointCloud();
-        for (size_t j = 0; j < keypointPos.size(); j++) {
-            if (keypointPos[j].empty()) continue;
+        for (size_t j = 0; j < keypointPos.size(); j++)
+        {
+            if (keypointPos[j].empty())
+                continue;
             // X,Y
             cv::Point2f point(keypointPos[j].at<float>(0, 0), -keypointPos[j].at<float>(2, 0));
             point = point * scale + offset;
@@ -96,7 +98,8 @@ int main(int argc, char* argv[]) {
     }
 #endif
 #else
-    for (size_t i = start; i < stop; i += step) {
+    for (size_t i = start; i < stop; i += step)
+    {
         char sKeyframe[256], sFrame[256];
         sprintf(sKeyframe, sTemplate, i);
         cv::Mat keyframe = cv::imread(sKeyframe, cv::IMREAD_COLOR);
